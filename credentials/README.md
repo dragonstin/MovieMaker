@@ -1,11 +1,14 @@
 # Credentials format
 
-## Algorithmia
 
-File: 'algorithmia.json'
+## Google-search
+
+File: `google-search.json`
+
 ```
 {
-  "apiKey": "sim8As72h56j3mBYqEOSHfLE4k81"
+    "apiKey" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "searchEngineId" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 ```
 
