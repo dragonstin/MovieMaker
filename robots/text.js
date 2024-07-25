@@ -2,7 +2,7 @@ const algorithmia = require('algorithmia')
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
 const sentenceBoundaryDetection = require('sbd')
 
-const wikipedia = require('../wikipedia')
+const getFromWikipedia = require('./wikipedia')
 
 const watson = require('../credentials/watson-nlu.json')
 const Assistantv2 = require('ibm-watson/assistant/v2.js')
@@ -29,6 +29,10 @@ async function robot() {
     console.log('> [text-robot] Stating...')
     const content = state.load()
 
+    await getFromWikipedia(content)
+    console.log(content)
+
+
     await fetchContentFromWikipedia(content)
     sanitizeContent(content)
     breakContnteIntoSentences(content)
@@ -37,14 +41,14 @@ async function robot() {
 
     state.save(content)
     
-    // const searchAndFetchWikipedia = async content => {
-    //     await wikipedia(content);
-    // };
+    const searchAndFetchWikipedia = async content => {
+        await wikipedia(content);
+    };
 
-    // console(searchAndFetchWikipedia)
+    console(searchAndFetchWikipedia)
 
     async function fetchContentFromWikipedia(content) {
-        // const searchAndFetchWikipedia =  await wikipedia(content)
+        const searchAndFetchWikipedia =  await wikipedia(content)
 
         const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)
         console.log('a')

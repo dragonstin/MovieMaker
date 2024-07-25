@@ -3,7 +3,7 @@ Isso retorna exatatente o mesmo conteúdo do Algorithmia
 By Marcuth :) @1Marcuth [14/12/22]
 */
 
-import wiki from "wikipedia" // npm i wikipedia
+const wiki = require("wikipedia") // npm i wikipedia
 
 async function getFromWikipedia(pageName) {
     const pageContent = {}
@@ -21,3 +21,5 @@ async function getFromWikipedia(pageName) {
 
     return pageContent
 }
+
+module.exports = getFromWikipedia
