@@ -52,7 +52,7 @@ async function robot() {
         content.downloadedImages = []
 
         for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
-            const images = content.sentences[sentenceIndex].image
+            const images = content.sentences[sentenceIndex].images
 
             for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {
                 const imageUrl = images[imageIndex]
@@ -78,7 +78,7 @@ async function robot() {
     async function downloadAndSave(url, fileName) {
         return imageDownloader.image({
             url: url,
-            dest: `./content/${fileName}`
+            dest: `../../content/${fileName}`
         })
     }
 

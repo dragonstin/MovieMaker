@@ -1,29 +1,23 @@
-const algorithmia = require('algorithmia')
-const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey
 const sentenceBoundaryDetection = require('sbd')
 
-const wikipedia = require('../wikipedia')
+const getFromWikipedia = require('./wikipedia')
 
 const watson = require('../credentials/watson-nlu.json')
 const Assistantv2 = require('ibm-watson/assistant/v2.js')
 const { IamAuthenticator } = require('ibm-watson/auth')
-const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1.js')
+const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1')
 
-// const nlu = new NaturalLanguageUnderstandingV1({
-//     iam_apikey: watsonApiKey,
-//     version: '2024-07-05',
-//     url: 'https://gateway.watsonplatform.net/natural-language-understanding/api'
-// })
 
-const assistant = new Assistantv2({
+const nlu = new NaturalLanguageUnderstandingV1({
     version: '2024-07-05',
     authenticator: new IamAuthenticator({
         apikey : watson.apikey
     }),
-    url: watson.url
+    serviceUrl: watson.url
 })
 
 const state = require('./state.js')
+const { response } = require('express')
 
 async function robot() {
     console.log('> [text-robot] Stating...')
@@ -36,29 +30,12 @@ async function robot() {
     await fetchKeywordOfAllSentences(content)
 
     state.save(content)
-    
-    // const searchAndFetchWikipedia = async content => {
-    //     await wikipedia(content);
-    // };
 
-    // console(searchAndFetchWikipedia)
 
     async function fetchContentFromWikipedia(content) {
-        // const searchAndFetchWikipedia =  await wikipedia(content)
-
-        const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey)
-        console.log('a')
-        const wikipediaAlgorithm = algorithmiaAuthenticated.algo("web/WikipediaParser/0.1.2?timeout=300")
-        console.log('b')
-        console.log(wikipediaAlgorithm)
-        const wikipediaResponde = await wikipediaAlgorithm.pipe(content.searchTerm)
-        console.log('c')
-        console.log(wikipediaResponde)
-        const wikipediaContent = wikipediaResponde.get()
-        console.log('d')
+        const wikipediaContent = await getFromWikipedia(content.searchTerm)
         
         content.sourceContentOriginal = wikipediaContent.content
-        console.log('e')
         console.log('> [text-robot] Fetching done!')
     }
 
@@ -95,7 +72,7 @@ async function robot() {
             content.sentences.push({
                 text: sentence,
                 keywords: [],
-                image: []
+                images: []
             })
         })
     }
@@ -109,32 +86,40 @@ async function robot() {
         for (const sentence of content.sentences) {
             console.log(`> [text-robot] Sentence: "${sentence.text}"`)
             
+            // Call the function and handle the result
             sentence.keywords = await fetchtWatsonAndReturnKeywords(sentence.text)
+                                    .then(keywords => {
+                                        return(keywords)
+                                    })
+                                    .catch(err => {
+                                        console.error('Failed to fetch keywords:', err);
+                                    });
             
             console.log(`> [text-robot] Keywords: "${sentence.keywords.join(',')}ln"`)
         }
     }
 
     async function fetchtWatsonAndReturnKeywords(sentence) {
-        return new Promise((resolve, reject) => {
-            nlu.analyze({
+        try {
+            // Perform the NLU analysis
+            const analysisResults = await nlu.analyze({
                 text: sentence,
                 features: {
                     keywords: {}
                 }
-            }, (error, response) => {
-                if (error) {
-                    reject(error)
-                    return
-                }
-
-                const keywords = response.keywords.map((keyword) => {
-                    return keyword.text
-                })
-
-                resolve(keywords)
-            })
-        })
+            });
+    
+            // Extract and process the keywords from the response
+            const keywords = analysisResults.result.keywords.map((keyword) => {
+                return keyword.text;
+            });
+    
+            return keywords;
+    
+        } catch (err) {
+            console.error('Error:', err);
+            throw err; // Re-throw the error so it can be handled by the caller
+        }
     }
 
 }
