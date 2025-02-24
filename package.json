@@ -20,7 +20,7 @@
     "axios": "^1.7.2",
     "express": "^4.19.4",
     "fs": "0.0.1-security",
-    "gm": "^1.23.0",
+    "gm": "^1.25.0",
     "googleapis": "^140.0.1",
     "ibm-watson": "^9.1.0",
     "image-downloader": "^4.3.0",
