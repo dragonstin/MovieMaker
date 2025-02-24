@@ -97,25 +97,26 @@ async function robot() {
     }
 
     async function fetchtWatsonAndReturnKeywords(sentence) {
-        return new Promise((resolve, reject) => {
-            nlu.analyze({
+        try {
+            // Perform the NLU analysis
+            const analysisResults = await nlu.analyze({
                 text: sentence,
                 features: {
                     keywords: {}
                 }
-            }, (error, response) => {
-                if (error) {
-                    reject(error)
-                    return
-                }
-
-                const keywords = response.keywords.map((keyword) => {
-                    return keyword.text
-                })
-
-                resolve(keywords)
-            })
-        })
+            });
+    
+            // Extract and process the keywords from the response
+            const keywords = analysisResults.result.keywords.map((keyword) => {
+                return keyword.text;
+            });
+    
+            return keywords;
+    
+        } catch (err) {
+            console.error('Error:', err);
+            throw err; // Re-throw the error so it can be handled by the caller
+        }
     }
 
 }
