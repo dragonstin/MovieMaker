@@ -146,7 +146,7 @@ async function robot() {
 
     async function renderVideoWithAfterEffects() {
         return new Promise((resolve, reject) => {
-            const aerenderFilePath = 'C:/Program Files/Adobe/Adobe After Effects CC 2019/Support Files/aerender'
+            const aerenderFilePath = 'C:/Program Files/Adobe/Adobe After Effects 2021/Support Files/aerender'
             const templateFilePath = `${rootPath}/templates/1/template.aep`
             const destinationFilePath = `${rootPath}/content/output.mov`
             const logFilePath = `${rootPath}/content/logAfterEffects.txt`
